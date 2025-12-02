@@ -1,31 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace kt15
+class SimpleMatrix
 {
-    class Program
+    private double[,] data;
+
+    public SimpleMatrix(int rows, int cols)
     {
-        static IEnumerable<int> GetFibonacciSequence(int count)
+        data = new double[rows, cols];
+
+        double value = 1;
+        for (int i = 0; i < rows; i++)
         {
-            int a = 0;
-            int b = 1;
-
-            for (int i = 0; i < count; i++)
+            for (int j = 0; j < cols; j++)
             {
-                yield return a;
-
-                int next = a + b;
-                a = b;
-                b = next;
+                data[i, j] = value++;
             }
         }
+    }
 
-        static void Main()
+    public IEnumerable<double> GetRow(int rowIndex)
+    {
+        for (int j = 0; j < data.GetLength(1); j++)
         {
-            foreach (int number in GetFibonacciSequence(15))
+            yield return data[rowIndex, j];
+        }
+    }
+
+    public IEnumerable<double> GetColumn(int colIndex)
+    {
+        for (int i = 0; i < data.GetLength(0); i++)
+        {
+            yield return data[i, colIndex];
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        SimpleMatrix matrix = new SimpleMatrix(2, 3);
+
+        Console.WriteLine("строки");
+        for (int i = 0; i < 2; i++)
+        {
+            Console.Write($"строка {i}: ");
+            foreach (var element in matrix.GetRow(i))
             {
-                Console.WriteLine(number);
+                Console.Write(element + " ");
             }
+            Console.WriteLine();
+        }
+
+        Console.WriteLine("\nстолбцы ");
+        for (int j = 0; j < 3; j++)
+        {
+            Console.Write($"столбец {j}: ");
+            foreach (var element in matrix.GetColumn(j))
+            {
+                Console.Write(element + " ");
+            }
+            Console.WriteLine();
         }
     }
 }
