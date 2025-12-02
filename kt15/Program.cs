@@ -1,38 +1,43 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
-class SimpleMatrix
+class PrimeEnumerator : IEnumerator<int>
 {
-    private double[,] data;
+    private int current = 1;
 
-    public SimpleMatrix(int rows, int cols)
+    public int Current => current;
+    object IEnumerator.Current => Current;
+
+    public bool MoveNext()
     {
-        data = new double[rows, cols];
-
-        double value = 1;
-        for (int i = 0; i < rows; i++)
+        int next = current + 1;
+        while (!IsPrime(next))
         {
-            for (int j = 0; j < cols; j++)
-            {
-                data[i, j] = value++;
-            }
+            next++;
         }
+        current = next;
+        return true;
     }
 
-    public IEnumerable<double> GetRow(int rowIndex)
+    public void Reset()
     {
-        for (int j = 0; j < data.GetLength(1); j++)
-        {
-            yield return data[rowIndex, j];
-        }
+        current = 1;
     }
 
-    public IEnumerable<double> GetColumn(int colIndex)
+    public void Dispose() { }
+
+    private bool IsPrime(int num)
     {
-        for (int i = 0; i < data.GetLength(0); i++)
+        if (num < 2) return false;
+        if (num == 2) return true;
+        if (num % 2 == 0) return false;
+
+        for (int i = 3; i * i <= num; i += 2)
         {
-            yield return data[i, colIndex];
+            if (num % i == 0) return false;
         }
+        return true;
     }
 }
 
@@ -40,28 +45,16 @@ class Program
 {
     static void Main()
     {
-        SimpleMatrix matrix = new SimpleMatrix(2, 3);
+        PrimeEnumerator primeEnumerator = new PrimeEnumerator();
+        int count = 0;
 
-        Console.WriteLine("строки");
-        for (int i = 0; i < 2; i++)
+        while (count < 15)
         {
-            Console.Write($"строка {i}: ");
-            foreach (var element in matrix.GetRow(i))
-            {
-                Console.Write(element + " ");
-            }
-            Console.WriteLine();
+            primeEnumerator.MoveNext();
+            Console.WriteLine($"prostoe num {count + 1}: {primeEnumerator.Current}");
+            count++;
         }
 
-        Console.WriteLine("\nстолбцы ");
-        for (int j = 0; j < 3; j++)
-        {
-            Console.Write($"столбец {j}: ");
-            foreach (var element in matrix.GetColumn(j))
-            {
-                Console.Write(element + " ");
-            }
-            Console.WriteLine();
-        }
+        primeEnumerator.Dispose();
     }
 }
